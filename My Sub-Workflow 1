@@ -1,0 +1,268 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "id": "c055762a-8fe7-4141-a639-df2372f30060",
+      "typeVersion": 1.1,
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        272,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1d56c0a-641c-46a2-9c0e-57a7333f2353",
+              "name": "repo_owner",
+              "value": "=NunoRifa",
+              "type": "string"
+            },
+            {
+              "id": "9db7c396-4956-4c1c-a95a-663e44cd3bb2",
+              "name": "repo_name",
+              "value": "=n8n-JSON-code",
+              "type": "string"
+            },
+            {
+              "id": "bbd62387-3ad5-438d-91c4-268b475069d6",
+              "name": "repo_path",
+              "value": "=https://github.com/NunoRifa/n8n-JSON-code",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        352
+      ],
+      "id": "19ce977a-8096-411e-bed0-ab8f7031e7e0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "content": "## Subworkflow",
+        "height": 731.7039821513649,
+        "width": 1910.7813046051347,
+        "color": 6
+      },
+      "id": "2963699e-5638-45d3-a1b1-08b51324784b",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        224,
+        32
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "NunoRifa",
+          "mode": "name"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "n8n-JSON-code",
+          "mode": "name"
+        },
+        "filePath": "/test.js",
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.github",
+      "typeVersion": 1.1,
+      "position": [
+        480,
+        144
+      ],
+      "id": "34c8def9-c170-4ed4-b265-b30f615f2f96",
+      "name": "Get a file",
+      "webhookId": "4a9b2579-c1ad-4fba-94ba-3f8311832d9e",
+      "alwaysOutputData": true,
+      "credentials": {
+        "githubOAuth2Api": {
+          "id": "zcaFs20iOaZituvU",
+          "name": "GitHub account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "f197f592-258b-49f2-806e-9fad57d29df4",
+              "leftValue": "={{ $json.content }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "69187f81-328d-4438-aafd-560d6bab23d2",
+              "leftValue": "={{ $json.error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        688,
+        144
+      ],
+      "id": "7207a4c0-82fd-4de2-91bc-8cca08c2be2a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "url": "=https://raw.githubusercontent.com/{{ $json.repo_owner }}/",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1104,
+        128
+      ],
+      "id": "05759ad1-f878-4604-b881-b30beb48e40e",
+      "name": "Get file"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C0A7MJ633EY",
+          "mode": "list",
+          "cachedResultName": "notif"
+        },
+        "text": "chat cenel",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.4,
+      "position": [
+        896,
+        48
+      ],
+      "id": "df7c97bf-f469-4718-9af2-b68ce9211bd6",
+      "name": "Send a message",
+      "webhookId": "05880757-2319-4399-a4db-1b328386748d",
+      "credentials": {
+        "slackApi": {
+          "id": "N2VWPOa3ECcnlTst",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Get file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "531d8fb2-bb5a-48f0-99f7-46ba99cf07fd",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-08T09:20:21.333Z",
+      "createdAt": "2026-01-08T09:20:21.333Z",
+      "role": "workflow:owner",
+      "workflowId": "VJeaVsMqIvtX4xU4",
+      "projectId": "TEtZuh9E7Muk0QeE"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
