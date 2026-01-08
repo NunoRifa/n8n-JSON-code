@@ -1,0 +1,645 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "id": "879a0917-a8f9-4907-bc05-0ff572dffe23",
+      "name": "Get All Workflows",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        1296,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "3d21f751-35bf-439c-8536-ff5e8968672e",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.isArchived }}",
+              "rightValue": "true"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "adf941b3-83dc-43d0-b984-7a73a7e863ea",
+      "name": "Discard Archived Workflows",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        1456,
+        880
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "operation": "toJson",
+        "mode": "each",
+        "options": {
+          "format": true
+        }
+      },
+      "id": "7040e607-1ccb-4ee0-856e-7df4ea3f1cca",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        2032,
+        976
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "9798deb6-300a-48ff-9f5c-a581b2d941a7",
+              "operator": {
+                "type": "array",
+                "operation": "contains",
+                "rightType": "any"
+              },
+              "leftValue": "={{ $('List of Names').item.json.name }}",
+              "rightValue": "={{ $('Process Each File').item.json.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1523f73c-44b7-49af-a526-7f860a69e5f5",
+      "name": "If File Exists",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2192,
+        976
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "558377f5-54a6-4dd2-872a-dd1fa8f1fc9f",
+              "name": "project_owner",
+              "type": "string",
+              "value": "PROJECT_OWNER e.g. mookielian"
+            },
+            {
+              "id": "063bbfbf-697e-4825-8c68-af5cc7b6aa2d",
+              "name": "project_name",
+              "type": "string",
+              "value": "PROJECT_NAME e.g. n8n"
+            },
+            {
+              "id": "7938d2e2-b203-45fc-8432-f9f3ac241946",
+              "name": "branch",
+              "type": "string",
+              "value": "main"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e8c549ac-af33-4222-a6d5-1357da47673a",
+      "name": "Configuration",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        800,
+        880
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "name"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "def0dc29-79eb-4985-b485-1b1acb7be01d",
+      "name": "List of Names",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        1136,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "owner": "={{ $('Configuration').item.json.project_owner }}",
+        "repository": "={{ $('Configuration').item.json.project_name }}",
+        "filePath": "={{ $('Process Each File').item.json.name }}",
+        "binaryData": true,
+        "commitMessage": "=File created! {{ $('Process Each File').item.json.name }}",
+        "branch": "={{ $('Configuration').item.json.branch }}"
+      },
+      "id": "2ea2c8b4-26bb-40ff-aa59-b435993f155d",
+      "name": "Create New File - GitLab",
+      "type": "n8n-nodes-base.gitlab",
+      "position": [
+        2352,
+        1056
+      ],
+      "typeVersion": 1,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "edit",
+        "owner": "={{ $('Configuration').item.json.project_owner }}",
+        "repository": "={{ $('Configuration').item.json.project_name }}",
+        "filePath": "={{ $('Process Each File').item.json.name }}",
+        "binaryData": true,
+        "commitMessage": "=File was updated! {{ $('Process Each File').item.json.name }}",
+        "branch": "={{ $('Configuration').item.json.branch }}"
+      },
+      "id": "1f448fa0-dfbe-46f9-b706-f94dbd7cf40f",
+      "name": "Update File - GitLab",
+      "type": "n8n-nodes-base.gitlab",
+      "position": [
+        2352,
+        864
+      ],
+      "typeVersion": 1,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "operation": "list",
+        "owner": "={{ $('Configuration').item.json.project_owner }}",
+        "repository": "={{ $('Configuration').item.json.project_name }}",
+        "returnAll": true,
+        "additionalParameters": {}
+      },
+      "id": "f6e21a2d-8568-4d51-8b45-99a1637567cf",
+      "name": "List All Files - GitLab",
+      "type": "n8n-nodes-base.gitlab",
+      "position": [
+        960,
+        880
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 12
+            }
+          ]
+        }
+      },
+      "id": "a63c745f-73a2-48c9-9c82-2468976e61a3",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        656,
+        880
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c0fdcd0a-d211-4876-91d5-ad9143af8edb",
+      "name": "Process Each File",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        1648,
+        880
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const { createdAt, updatedAt, id, name, active, isArchived, ...rest } = item.json;\n  return { json: rest };\n});"
+      },
+      "id": "fa10f641-2e4e-4dcc-a89b-0b7d9872b509",
+      "name": "Remove Unwanted Fields",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1856,
+        976
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "C09KF70UXL3",
+          "cachedResultName": "backup-notifications"
+        },
+        "text": "=*Successful Backup!*\n\n- Execution ID: {{ $execution.id }}\n- Mode: {{ $execution.mode }}\n- Timestamp(Workflow Region): {{$now.toFormat('yyyy-MM-dd HH:mm:ss')}}",
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "id": "d51bbf67-c8ae-4bb6-991d-c0b839670818",
+      "name": "Send Message to Channel",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        1856,
+        784
+      ],
+      "webhookId": "7204c9cc-0e71-46ce-9760-3c49075bc472",
+      "executeOnce": true,
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "C09KF70UXL3",
+          "cachedResultName": "backup-notifications"
+        },
+        "text": "=*Failed creating a new file - GitLab.*\n\n- File Name: {{ $('Process Each File').item.json.name }}\n- Error: {{ $json.error }}\n- Workflow State: _active={{ $('Process Each File').item.json.active }}_\n- Execution ID: {{ $execution.id }}\n- Mode: {{ $execution.mode }}\n- Timestamp(Workflow Region): {{$now.toFormat('yyyy-MM-dd HH:mm:ss')}}",
+        "otherOptions": {}
+      },
+      "id": "8db55fdc-dc1f-4d16-ac3d-9f10618aad93",
+      "name": "New File - Failed",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        2544,
+        1072
+      ],
+      "webhookId": "5354db33-36b0-4f5b-ba5e-4d902660a1dd",
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "C09KF70UXL3",
+          "cachedResultName": "backup-notifications"
+        },
+        "text": "=*Failed updating specified file - GitLab.*\n\n- File Name: {{ $('Process Each File').item.json.name }}\n- Error: {{ $json.error }}\n- Workflow State: _active={{ $('Process Each File').item.json.active }}_\n- Execution ID: {{ $execution.id }}\n- Mode: {{ $execution.mode }}\n- Timestamp(Workflow Region): {{$now.toFormat('yyyy-MM-dd HH:mm:ss')}}",
+        "otherOptions": {}
+      },
+      "id": "b5f0edfb-d113-4ba6-b903-1617841c9cb9",
+      "name": "Update File - Failed",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        2544,
+        880
+      ],
+      "webhookId": "5354db33-36b0-4f5b-ba5e-4d902660a1dd",
+      "typeVersion": 2.3
+    },
+    {
+      "parameters": {
+        "content": "# Welcome\n\n## Summary of Nodes\n\n- Daily Trigger (Customizable)\n- Conf. (GitLab)\n- List All Files (Necessary for comparison)\n- List of Names (Turns all names into an array of single field)\n- Get All Workflows (JSON of all workflows, base code)\n- Discard Archived Workflows (Toggle of if you want to backup archived too)\n- Process Each File (Loop to execute nodes for each workflow)\n  - Remove Unwanted Fields (Returns clean node code of the workflow)\n  - Convert to File (Turns JSON code into a formatted file ready for upload)\n  - If File Exists (Route into two path, Update or Create in GitLab)\n  - Update File - GitLab (Updates existing file, no update if the file is the same)\n  - Update File - Failed (Informs you on Slack about the file that failed)\n  - Create New File - GitLab (Push new file to repo.)\n  - New File - Failed (Informs you about failed file creation)\n- Send Message to Channel (Done branch of loop, success message)\n",
+        "height": 704,
+        "width": 400,
+        "color": 4
+      },
+      "id": "a877804d-6f89-4582-b1a7-e09e1fe26173",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        624
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 704,
+        "width": 2608,
+        "color": 5
+      },
+      "id": "57565ff4-5df1-4d47-8d15-1276c20aeda7",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        624
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "# CREDENTIALS",
+        "height": 336,
+        "width": 3024,
+        "color": 6
+      },
+      "id": "5dfd0e3b-2619-48bb-8419-110835dce7c4",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -64,
+        1344
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Configuration Node\n\n- Create a project in GitLab.\n- Type the owner of the project as 'project_owner'.\n- Type the name of the project as 'project_name'.\n- Type the branch name. Will create a branch if main doesn't exist.",
+        "height": 176,
+        "width": 496
+      },
+      "id": "be58d7c8-9d62-4f6d-a66a-53149e166824",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -48,
+        1440
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## GitLab - [Docs](https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.gitlab/)\n\n- Enter your project settings on GitLab Dashboard.\n- Go to access tokens page and create a new token.\n- Paste in your token in n8n credential and save.\n- No need to change the GitLab server parameter.",
+        "height": 176,
+        "width": 480
+      },
+      "id": "6d922839-b4ee-4a5d-b445-832227f04fc4",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        464,
+        1440
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## n8n Internal - [Docs](https://docs.n8n.io/integrations/builtin/core-nodes/n8n-nodes-base.n8n/)\n\n- From left menu and bottom go to your user settings.\n- Go to API Keys page and create a new key.\n- Paste in the API Key in the credential page.\n- As base URL, enter your domain with '/api/v1' at the end and save.",
+        "height": 176,
+        "width": 496
+      },
+      "id": "012a305c-ff0d-47a7-b59b-994f66724aa6",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        960,
+        1440
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Slack - [Docs](https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.slack/)\n\n- Go to 'api.slack.com/apps' and create an account if you haven't already.\n- Create a new app in your workspace and go to OAuth screen from left menu.\n- Add a redirect URL which is your domain with this at the end: '/rest/oauth2-credential/callback'. In scopes section add these scopes as Bot Token Scopes: chat:write, channels:join, channels:read, groups:read... \n- From OAuth Tokens section copy bot token and paste as access token in n8n credential. From basic information page copy signature secret, paste in n8n credential and save.",
+        "height": 176,
+        "width": 1440
+      },
+      "id": "3e4b022c-4d87-492a-a895-f0b8eda5736a",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1472,
+        1440
+      ],
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Configuration": {
+      "main": [
+        [
+          {
+            "node": "List All Files - GitLab",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List of Names": {
+      "main": [
+        [
+          {
+            "node": "Get All Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If File Exists": {
+      "main": [
+        [
+          {
+            "node": "Update File - GitLab",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create New File - GitLab",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "If File Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Workflows": {
+      "main": [
+        [
+          {
+            "node": "Discard Archived Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New File - Failed": {
+      "main": [
+        [
+          {
+            "node": "Process Each File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Each File": {
+      "main": [
+        [
+          {
+            "node": "Send Message to Channel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Remove Unwanted Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update File - Failed": {
+      "main": [
+        [
+          {
+            "node": "Process Each File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update File - GitLab": {
+      "main": [
+        [
+          {
+            "node": "Process Each File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update File - Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Unwanted Fields": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List All Files - GitLab": {
+      "main": [
+        [
+          {
+            "node": "List of Names",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create New File - GitLab": {
+      "main": [
+        [
+          {
+            "node": "Process Each File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "New File - Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Discard Archived Workflows": {
+      "main": [
+        [
+          {
+            "node": "Process Each File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "1bc60180-db06-4b65-8cc4-030b71474166",
+  "activeVersionId": null,
+  "triggerCount": 0,
+  "shared": [
+    {
+      "updatedAt": "2026-01-06T09:13:31.341Z",
+      "createdAt": "2026-01-06T09:13:31.341Z",
+      "role": "workflow:owner",
+      "workflowId": "ZP0h4c03Avfw5BLX",
+      "projectId": "TEtZuh9E7Muk0QeE"
+    }
+  ],
+  "activeVersion": null,
+  "tags": []
+}
