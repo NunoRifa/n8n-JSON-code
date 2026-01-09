@@ -1306,5 +1306,12 @@
     "name": null,
     "description": null
   },
-  "tags": []
+  "tags": [
+    {
+      "updatedAt": "2026-01-09T12:32:17.392Z",
+      "createdAt": "2026-01-09T12:32:17.392Z",
+      "id": "xSv9CrTVXxzIPEwt",
+      "name": "DevOps"
+    }
+  ]
 }
