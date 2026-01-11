@@ -533,6 +533,28 @@
       ],
       "id": "d91e4fdb-a82d-47bb-b303-6224646c7376",
       "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "chatId": "914552853",
+        "text": "=*Successful Backup!*\n\n- Execution ID: {{ $execution.id }}\n- Mode: {{ $execution.mode }}\n- Timestamp(Workflow Region): {{$now.toFormat('yyyy-MM-dd HH:mm:ss')}}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1552,
+        -48
+      ],
+      "id": "bb40da43-832a-4051-abd5-ecfead70b671",
+      "name": "Send a text message",
+      "webhookId": "65360ef6-6f69-47d3-ba92-a773cfd2fd6a",
+      "credentials": {
+        "telegramApi": {
+          "id": "f6crywLLRocqk2Wp",
+          "name": "Bot Jack Assistant"
+        }
+      }
     }
   ],
   "connections": {
@@ -728,6 +750,17 @@
           }
         ]
       ]
+    },
+    "Send Message to Channel": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "settings": {
@@ -742,8 +775,8 @@
     "templateCredsSetupCompleted": true
   },
   "pinData": {},
-  "versionId": "a7b0a745-46f7-4c5f-98ba-ef9707e34abb",
-  "activeVersionId": "a7b0a745-46f7-4c5f-98ba-ef9707e34abb",
+  "versionId": "dceee371-7da6-45f9-a81e-6f6a5eefcc17",
+  "activeVersionId": "dceee371-7da6-45f9-a81e-6f6a5eefcc17",
   "triggerCount": 1,
   "shared": [
     {
@@ -755,9 +788,9 @@
     }
   ],
   "activeVersion": {
-    "updatedAt": "2026-01-08T13:18:27.993Z",
-    "createdAt": "2026-01-08T13:18:27.993Z",
-    "versionId": "a7b0a745-46f7-4c5f-98ba-ef9707e34abb",
+    "updatedAt": "2026-01-11T16:12:17.861Z",
+    "createdAt": "2026-01-11T16:12:17.861Z",
+    "versionId": "dceee371-7da6-45f9-a81e-6f6a5eefcc17",
     "workflowId": "CF98DTKYMGTa246r",
     "nodes": [
       {
@@ -1293,6 +1326,28 @@
         ],
         "id": "d91e4fdb-a82d-47bb-b303-6224646c7376",
         "name": "Schedule Trigger"
+      },
+      {
+        "parameters": {
+          "chatId": "914552853",
+          "text": "=*Successful Backup!*\n\n- Execution ID: {{ $execution.id }}\n- Mode: {{ $execution.mode }}\n- Timestamp(Workflow Region): {{$now.toFormat('yyyy-MM-dd HH:mm:ss')}}",
+          "additionalFields": {}
+        },
+        "type": "n8n-nodes-base.telegram",
+        "typeVersion": 1.2,
+        "position": [
+          1552,
+          -48
+        ],
+        "id": "bb40da43-832a-4051-abd5-ecfead70b671",
+        "name": "Send a text message",
+        "webhookId": "65360ef6-6f69-47d3-ba92-a773cfd2fd6a",
+        "credentials": {
+          "telegramApi": {
+            "id": "f6crywLLRocqk2Wp",
+            "name": "Bot Jack Assistant"
+          }
+        }
       }
     ],
     "connections": {
@@ -1483,6 +1538,17 @@
           [
             {
               "node": "Configuration",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Send Message to Channel": {
+        "main": [
+          [
+            {
+              "node": "Send a text message",
               "type": "main",
               "index": 0
             }
